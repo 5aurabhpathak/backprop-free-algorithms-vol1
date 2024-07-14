@@ -15,6 +15,7 @@ backpropagation techniques.
 4. [Usage](#usage)
 5. [Hyperparameter Tuning](#hyperparameter-tuning)
 6. [Examples](#examples)
+7. [Caveats](#caveats)
 
 ## Overview
 

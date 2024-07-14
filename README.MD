@@ -167,7 +167,14 @@ data for the experiment under execution, such as tuner runs
 with different hparams settings under consideration. 
 Optional arguments may include hparams that one wants to 
 fix instead of tuning as well as other params that are
-defined in `hparams.py`.
+defined in `hparams.py`. Parameters defined in `hparams.py`
+other than those that are tunable (see below) will 
+take on their default value unless overridden through 
+command line. See `hparams.py` for their default values. 
+
+*Note: Not all parameters defined in `hparams.py` can be 
+overridden through commandline, but one can always edit 
+the file directly for such scenarios.*
 
 ## Hyperparameter Tuning
 Specifically, we tune the following 
@@ -186,3 +193,67 @@ We exclude those hparams from tuning that are set to a
 fixed value by means of an optional command line flag.
 
 ## Examples
+```bash
+./train.bash data/mnist_test --dataset mnist --num_epochs 
+100 \
+ --lr 1e-3 --activation relu --bw_init ortho \
+--algorithm dfa --problem_type reconstruction \
+--examples_frac .5 --executions_per_trial 1 \
+--batch_norm --objective val_loss --arch 500-500
+```
+```bash
+./train.bash data/test --dataset cifar10 --num_epochs 50 \
+ --lr 1e-3 --activation tanh --bw_init lecun \
+--algorithm drtp --problem_type classification \
+--examples_frac 0. --executions_per_trial 3 \
+--nobatch_norm --objective loss --arch 500-500-1000-500 \
+--tracker bp_cosine --tracker weight_alignment
+```
+```bash
+./train.bash data/ll_test --dataset cifar10 --num_epochs 
+150 \
+ --lr 1e-4 --activation swish --bw_init lecun \
+--algorithm cce --problem_type classification \
+--examples_frac 0. --executions_per_trial 1 \
+--nobatch_norm --objective loss --arch 500-500-1000-500 \
+--tracker gradients --tracker weight_alignment
+```
+```bash
+./train.bash data/ll_test_recons --dataset cifar10 
+--num_epochs 
+150 \
+--activation swish --bw_init lecun --skew_type all\
+--algorithm mse --problem_type reconstruction \
+--examples_frac 0. --executions_per_trial 3 \
+--batch_norm --objective val_loss --arch 500-500-1000
+```
+
+## Caveats
+There are minimal checks in the code for parameter 
+combinations. However, using them arbitrarily might lead to
+failures and/or instability in training. It is advisable to 
+read the reference papers and
+use the knowledge of respective algorithms in experiment 
+designs. Following are some scenarios off the top:
+
+- DRTP does not work well for reconstruction problems by 
+  design. Code throws an error on attempting to use it as so.
+- DRTP fails with unbounded activation functions such as 
+  ReLU. No checks in code. Training will likely explode to 
+  NaN.
+- Using MSE loss for classification might not work as 
+  well as CCE.
+- Batchnorm might hurt or boost performance depending on 
+  other settings, check performance without it first 
+  before using it.
+- Dropout regularization hyperparameter is only 
+  activated when `objective` is `val_loss` or 
+  `val_error`. Providing a dropout rate hyperparameter 
+  without a `val` substring in the `objective` will have 
+  no effect.
+- When `val` type `objective` is provided, either a 
+  dataframe must already be present in the `data` folder 
+  that lists the best learning rate for different 
+  hparams from an earlier tuning run, or `lr` must be 
+  fixed on the command line. See `hypermodels.py` for 
+  details.

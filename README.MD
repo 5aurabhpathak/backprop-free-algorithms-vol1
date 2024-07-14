@@ -171,8 +171,7 @@ defined in `hparams.py`.
 
 ## Hyperparameter Tuning
 Specifically, we tune the following 
-hyperparameters, unless they are set to fixed value by 
-means of an optional command line flag:
+hyperparameters:
 - architecture: chosen from `hparams.ARCHS`
 - algorithms: chosen from `hparams.ALGORITHM`
 - activations: from `hparams.ACTIVATION`
@@ -182,5 +181,8 @@ means of an optional command line flag:
   sampling='log'`
 - skew type: from `hparams.SKEW_TYPES`
 - dropout regularization rate: from `hparams.DROPOUT_RATE`
+
+We exclude those hparams from tuning that are set to a
+fixed value by means of an optional command line flag.
 
 ## Examples

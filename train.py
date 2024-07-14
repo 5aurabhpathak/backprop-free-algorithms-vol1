@@ -26,7 +26,7 @@ from queue import Queue
 import tensorflow as tf
 from absl import logging
 
-import backprojection
+import projection
 import sequential
 import util
 

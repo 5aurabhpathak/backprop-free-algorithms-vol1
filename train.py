@@ -368,7 +368,7 @@ class Model(tf.keras.Model):
                 if isinstance(lyr, Layer):
                     lyr_output = post_activation_outs.get()
 
-                    if hasattr(lyr, 'local_loss_tracker'):
+                    if not self.config.algorithm == 'dfa' and hasattr(lyr, 'local_loss_tracker'):
                         self.error_signal(lyr, y, lyr_output)
 
                     if hasattr(self, 'tboard'):

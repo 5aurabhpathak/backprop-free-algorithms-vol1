@@ -47,7 +47,7 @@ class Layer(tf.keras.layers.Layer):
         self.backend = layer
         self.config = config
         self.inputs = None
-        self.project = backprojection.DenseProject(layer.units, config)
+        self.project = projection.DenseProject(layer.units, config)
 
         # trackers
         if config.trackers:

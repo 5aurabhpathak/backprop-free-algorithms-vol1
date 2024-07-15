@@ -14,11 +14,11 @@ WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEM
 COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
 OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-Purpose: subclass keras tuner gridsearch to make trial_id random instead of sequential. resolves visualization issues
-with several runs in tensorboard with conflicting trial numbers.
-This code in this module is identical to that in keras_tuner.oracles.GridSearchOracle except for the following line:
-    trial_id = str(np.random.randint(1000000))
-which assigns random ids to trials instead of sequential ids in the original code
+Purpose: subclass keras tuner gridsearch to make trial_id random instead of sequential as well as to save the training
+metrics of all models build and trained. It resolves visualization issues
+with several runs in tensorboard with conflicting trial numbers and allows plotting model metrics with matplotlib using
+saved histories of all models. The code in this module is identical to that in keras_tuner.oracles.GridSearchOracle
+except for a few bookkeeping related changes.
 """
 import copy
 import os
@@ -114,6 +114,10 @@ class GridSearch(tuner_module.Tuner):
         )
         self.save_best_model = save_best_model
         self.trial_counter = 0
+
+        # to save histories of all models built and trained by this tuner
+        self.histories = []
+
         super().__init__(oracle, hypermodel, **kwargs)
 
     def run_trial(self, trial, *args, **kwargs):
@@ -149,4 +153,5 @@ class GridSearch(tuner_module.Tuner):
             histories.append(obj_value)
 
         os.remove(status_filename)
+        self.histories.append(dict(hp=trial.hyperparameters, histories=histories))
         return histories

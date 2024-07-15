@@ -31,6 +31,9 @@ BW_INIT = ['ortho', 'lecun']
 DATA_SCALER = ['standard', 'zero_one']
 DROPOUT_RATE = [.1, .2, .3, .4, .5]
 WEIGHT_DECAY = 0.
+
+# This promotes weight alignment at initialization.
+# Initialization motivated from observations in ref. https://arxiv.org/pdf/2011.12428
 FW_INIT_WEIGHT_ALIGNED = False
 
 augmentations = Augmentations()

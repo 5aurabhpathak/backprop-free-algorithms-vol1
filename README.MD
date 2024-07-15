@@ -149,11 +149,13 @@ docker run -itv <mounts> --network host --gpus all
 - `utils.py`: miscellaneous functions used throughout 
   the project.
 - `gridsearch.py`: essentially a copy of keras_tuner's 
-  gridsearch functionality except that we create trials 
-  with random trial_id instead of sequential in the 
-  keras_tuner's default implementation of gridsearch. 
-  Random trial_ids help in visualizing multiple tuning runs 
-  in tensorboard simultaneously without clash.
+  gridsearch functionality except a few bookkeeping 
+  enhancements, such as recording training histories of 
+  all models built and trained during the running 
+  experiment, random trial_ids replacing sequential 
+  trial_ids for tensorboard visualization, etc.
+- `example.ipynb`: shows minimal example on how to tune 
+  and plot histories directly using code.
 
 ## Usage
 The primary design objective is to be able to tune best 
@@ -177,6 +179,17 @@ command line. See `hparams.py` for their default values.
 *Note: Not all parameters defined in `hparams.py` can be 
 overridden through commandline, but one can always edit 
 the file directly for such scenarios.*
+
+### Example: classification on CIFAR10 dataset
+For a more advanced interaction with this project, we 
+can directly utilize the code instead of the bash script.
+To that end, `example.ipynb` contains a minimal 
+demonstration of how to do so. In it, we show classification on 
+CIFAR10 dataset using different algorithms. We consider 
+the training error rate and find the best learning rate 
+for respective algorithms in doing so.
+
+![img_1.png](img_1.png) ![img_2.png](img_2.png)
 
 ## Hyperparameter Tuning
 Specifically, we tune the following 

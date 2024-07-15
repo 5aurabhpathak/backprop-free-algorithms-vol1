@@ -16,6 +16,7 @@ backpropagation techniques.
 5. [Hyperparameter Tuning](#hyperparameter-tuning)
 6. [Examples](#examples)
 7. [Caveats](#caveats)
+8. [Footnote](#footnote)
 
 ## Overview
 
@@ -258,3 +259,18 @@ designs. Following are some scenarios off the top:
   hparams from an earlier tuning run, or `lr` must be 
   fixed on the command line. See `hypermodels.py` for 
   details.
+
+## Footnote
+Thanks for reading the README. This software is "AS IS" 
+and may contain issues. I will fix them as I come across 
+or if you bring them to my notice. I am deeply 
+interested in efficient training algorithms for deep 
+learning that draw inspiration from but are not limited by 
+natural counterparts of neural nets, as well as sustainable 
+and decentralized AI in general. As such, I would greatly
+welcome research and collaboration opportunities in this
+domain. Please
+[contact](mailto:saurabhpathak.personal@gmail.com) me if you
+think I can be of value.
+
+Cheers!

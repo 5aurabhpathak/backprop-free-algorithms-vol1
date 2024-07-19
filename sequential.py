@@ -55,5 +55,5 @@ def get_model(config):
         model.add(tf.keras.layers.Dense(config.n_classes, name='DenseOut',
                                         kernel_initializer=tf.keras.initializers.Orthogonal(gain=1.,
                                                                                             seed=hparams.RANDOM_SEED)))
-        model.add(tf.keras.layers.Activation('tanh'))
+        model.add(tf.keras.layers.Activation('tanh' if config.scale_data == 'standard' else 'sigmoid'))
     return model

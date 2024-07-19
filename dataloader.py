@@ -275,6 +275,7 @@ def augmentations(config):
                                                  tf.clip_by_value(x, -1. if config.scale_data == 'standard' else 0.,
                                                                   1.)))
     data_augmentation.add(tf.keras.layers.Flatten())
+    data_augmentation.compile(run_eagerly=False)
     return data_augmentation
 
 
@@ -313,6 +314,8 @@ def get_dataset(config, training=False):
             return x, y
         elif config.problem_type == 'reconstruction':
             return x, x
+        else:
+            raise ValueError(f'unknown problem type: {config.problem_type}')
 
     ds = ds.map(augment_batch, num_parallel_calls=tf.data.AUTOTUNE)
 

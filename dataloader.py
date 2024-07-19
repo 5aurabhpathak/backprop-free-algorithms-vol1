@@ -255,6 +255,7 @@ def get_n_classes(config):
 def augmentations(config):
     """
     creates model that applies data augmentation
+    :param config: config dict
     :return: keras model that performs data augmentation
     """
     data_augmentation = dict(brightness=tf.keras.layers.RandomBrightness(hparams.augmentations.brightness,

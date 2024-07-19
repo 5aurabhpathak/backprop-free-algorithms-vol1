@@ -306,6 +306,7 @@ def get_dataset(config, training=False):
         adds data augmentations
         :param x: data x
         :param y: data y
+        :return: augmented data x, where y is passed-through
         """
         x = data_augmentation(x, training=training)
         if config.problem_type == 'classification':

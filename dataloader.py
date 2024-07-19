@@ -301,7 +301,7 @@ def get_dataset(config, training=False):
     ds = ds.cache()
 
     if training:
-        ds = ds.shuffle(128, reshuffle_each_iteration=True)
+        ds = ds.shuffle(4096, reshuffle_each_iteration=True)
 
     ds = ds.batch(config.batchsize, drop_remainder=True).prefetch(tf.data.AUTOTUNE)
 

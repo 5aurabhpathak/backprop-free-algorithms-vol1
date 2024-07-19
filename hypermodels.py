@@ -49,7 +49,6 @@ class HyperModel(keras_tuner.HyperModel):
         """
         super().__init__(*args, **kwargs)
         self.config = config
-        self.architectures = hparams.ARCHS
 
         # if validation error is the tuning objective, then best learning rate should be known. If not, it must be set
         # Assumption: the best learning rate on training loss is known before tuning on the val loss or error
@@ -96,7 +95,7 @@ class HyperModel(keras_tuner.HyperModel):
         """
         self.config.algorithm = hp.Choice('algo', hparams.ALGORITHM)
         self.config.activation = hp.Choice('act', hparams.ACTIVATION)
-        self.config.arch = hp.Choice('arch', self.architectures)
+        self.config.arch = hp.Choice('arch', hparams.ARCHS)
         self.config.batchnorm = hp.Boolean('bn')
         self.config.bw_init = hp.Choice('F', hparams.BW_INIT)
 

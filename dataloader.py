@@ -256,7 +256,7 @@ def get_n_classes(config):
         return x[0].ravel().shape[0]
 
 
-def augmentations():
+def augmentations(config):
     """
     creates model that applies data augmentation
     :return: keras model that performs data augmentation
@@ -274,7 +274,9 @@ def augmentations():
     data_augmentation = tf.keras.Sequential([v for k, v in data_augmentation.items()
                                              if hparams.augmentations.enabled[k] and
                                              not hparams.augmentations.disable_all])
-    data_augmentation.add(tf.keras.layers.Lambda(lambda x: tf.clip_by_value(x, -1., 1.)))
+    data_augmentation.add(tf.keras.layers.Lambda(lambda x:
+                                                 tf.clip_by_value(x, -1. if config.scale_data == 'standard' else 0.,
+                                                                  1.)))
     data_augmentation.add(tf.keras.layers.Flatten())
     return data_augmentation
 
@@ -300,7 +302,7 @@ def get_dataset(config, training=False):
 
     ds = ds.batch(config.batchsize, drop_remainder=True).prefetch(tf.data.AUTOTUNE)
 
-    data_augmentation = augmentations()
+    data_augmentation = augmentations(config)
     def augment_batch(x, y):
         x = data_augmentation(x, training=training)
         if config.problem_type == 'classification':

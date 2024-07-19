@@ -211,11 +211,12 @@ def get_data(config, training=True):
         _, inds = next(sss.split(x, y))
         x, y = x[inds], y[inds]
 
-    y = tf.keras.utils.to_categorical(y).astype(np.float32)
     x = x.astype(np.float32)
 
     if config.problem_type == 'reconstruction':
         return x, x
+
+    y = tf.keras.utils.to_categorical(y).astype(np.float32)
     return x, y
 
 

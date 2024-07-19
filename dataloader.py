@@ -239,6 +239,9 @@ def scaler(x, y, config):
     elif scale != 'identity':
         raise ValueError(f'Unknown scaler: {str(scale)}')
 
+    if config.problem_type == 'reconstruction':
+        return x, x
+
     return x, y
 
 

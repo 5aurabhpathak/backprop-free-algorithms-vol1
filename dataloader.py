@@ -307,6 +307,11 @@ def get_dataset(config, training=False):
 
     data_augmentation = augmentations(config)
     def augment_batch(x, y):
+        """
+        adds data augmentations
+        :param x: data x
+        :param y: data y
+        """
         x = data_augmentation(x, training=training)
         if config.problem_type == 'classification':
             return x, y

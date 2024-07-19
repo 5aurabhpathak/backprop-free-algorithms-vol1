@@ -37,7 +37,7 @@ WEIGHT_DECAY = 0.
 FW_INIT_WEIGHT_ALIGNED = False
 
 augmentations = Augmentations()
-augmentations.disable_all = False
+augmentations.disable_all = True
 augmentations.enabled = dict(brightness=True,
                              contrast=False,
                              zoom=False,

@@ -212,10 +212,6 @@ def get_data(config, training=True):
         x, y = x[inds], y[inds]
 
     x = x.astype(np.float32)
-
-    if config.problem_type == 'reconstruction':
-        return x, x
-
     y = tf.keras.utils.to_categorical(y).astype(np.float32)
     return x, y
 
@@ -224,7 +220,7 @@ def scaler(x, y, config):
     """
     scales data to specified range in config
     :param x: data x
-    :param y: data y
+    :param y: data y, passes through unchanged
     :param config: config dict
     :return: scaled data x and y
     """
@@ -238,9 +234,6 @@ def scaler(x, y, config):
         x = scale(x)
     elif scale != 'identity':
         raise ValueError(f'Unknown scaler: {str(scale)}')
-
-    if config.problem_type == 'reconstruction':
-        return x, x
 
     return x, y
 

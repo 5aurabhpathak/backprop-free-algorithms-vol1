@@ -24,7 +24,17 @@ import util
 
 def get_model(config):
     """
-    define dense sequential model
+    define dense or convolutional sequential model based on architecture specified in config in the following string
+    format: module-module-...-module
+    where each module is formatted as:
+    layer_type(c|d|t|p)filters(int):stride_size(int, only specified if layer_type in {c, p})
+    where c is for convolutional layer, d is for dense layer, t is for conv. transpose layer, p is for avg. pooling
+    layer
+    examples:
+    -> c128:2-c256:1-p-c512:1-t256:2-t128:2
+    -> d500-d300-d400
+    -> c64:1-c64:2-c128:2-d256-d512
+    Note that when a dense layer follows a convolutional layer, a 'flatten()' operation is automatically applied
     :param config: config dict containing model specifications
     :return: keras model
     """

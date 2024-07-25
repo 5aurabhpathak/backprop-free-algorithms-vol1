@@ -112,65 +112,6 @@ class Eurosat(Dataset):
         return x, y
 
 
-class DatasetLoader:
-    """Dataloader class for loading dataset. Applies imbalanced sampling on train and test sets if requested"""
-
-    def __init__(self, dataset, skew_type=None, imbalance_factor=1.):
-        """
-        init
-        :param dataset: dataset class
-        :param skew_type: 'long_tailed' induces exponentially decreasing samples across classes, 'step' induces stepwise
-        decrement in number of samples across different classes
-        :param imbalance_factor: desired ratio between the number of samples of the most frequent class and number of
-        samples of the least frequent class. see ref 2
-        ref 1: https://arxiv.org/pdf/1710.05381
-        ref 2: https://arxiv.org/pdf/2006.07529
-        """
-        if skew_type not in {None, 'long_tailed', 'step'}:
-            raise ValueError(f'Unknown skew type {skew_type}')
-        assert (imbalance_factor > 1. and skew_type is not None) or (imbalance_factor == 1 and skew_type is None)
-        self.dataset = dataset
-        self.skew_type = skew_type
-        self.imbalance_factor = imbalance_factor
-
-    def load_data(self):
-        """
-        creates imbalanced dataset according to the set scheme
-        :return: imbalanced dataset as train and test sets
-        """
-        (x_train, y_train), (x_test, y_test) = self.dataset.load_data()
-
-        if self.skew_type == 'long_tailed':
-            mu = 1./ self.imbalance_factor ** (1./ y_train.max())
-            first = np.argwhere(y_train == 0)[:, 0]
-            new_xtrain = [x_train[first]]
-            new_ytrain = [y_train[first]]
-            uniques = np.unique(y_train)
-            for yi in uniques[1:]:
-                x_train_yi = np.argwhere(y_train == yi)[:, 0]
-                size = int(x_train_yi.shape[0] * mu ** yi)
-                choice = np.random.choice(x_train_yi, size=size, replace=False)
-                new_xtrain.append(x_train[choice])
-                new_ytrain.append(y_train[choice])
-            x_train = np.concatenate(new_xtrain, axis=0)
-            y_train = np.concatenate(new_ytrain, axis=0)
-
-        elif self.skew_type == 'step':
-            median_cutoff = y_train <= np.median(np.unique(y_train))
-            inds = np.argwhere(median_cutoff)[:, 0]
-            new_xtrain = [x_train[inds]]
-            new_ytrain = [y_train[inds]]
-
-            inds = np.argwhere(~median_cutoff)[:, 0]
-            size = int(inds.shape[0] / self.imbalance_factor)
-            choice = np.random.choice(inds, size=size, replace=False)
-            new_xtrain.append(x_train[choice])
-            new_ytrain.append(y_train[choice])
-            x_train = np.concatenate(new_xtrain, axis=0)
-            y_train = np.concatenate(new_ytrain, axis=0)
-        return (x_train, y_train), (x_test, y_test)
-
-
 def get_data(config, training=True):
     """
     reads in dataset defined in config and returns training set or test set conditioned on whether training==True
@@ -197,11 +138,9 @@ def get_data(config, training=True):
         raise ValueError(f'unknown dataset: {dataset_name}')
 
     try:
-        loader = DatasetLoader(dataset, skew_type=config.get('skew_type'),
-                               imbalance_factor=config.get('imbalance_factor', 1.))
-        (x_train, y_train), (x_test, y_test) = loader.load_data()
+        (x_train, y_train), (x_test, y_test) = dataset.load_data()
     except AttributeError:
-        raise ValueError(f'{loader.__name__} must have load_data() defined')
+        raise ValueError(f'{dataset.__name__} must have load_data() defined')
 
     x, y = (x_train, y_train) if training else (x_test, y_test)
 
@@ -240,9 +179,9 @@ def scaler(x, y, config):
 
 def get_n_classes(config):
     """
-    get the number of classes
+    gets the number of classes for classification task, input dimensions for regression task
     :param config: config dict
-    :return: number of classes
+    :return: number of classes or number of input dimensions depending upon the task type
     """
     #TODO: need to define a simpler logic. Currently this requires reading the whole dataset
     x, y = get_data(config)

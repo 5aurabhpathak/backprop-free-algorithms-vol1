@@ -44,7 +44,6 @@ def define_flags():
     batchnorm: [True, False]
     feedback_matrix init scheme: hparams.BW_INIT
     learning rate: min_value=1e-4, max_value=.1, step=10, sampling='log'
-    skew type: only when skew_type flag is set to 'all', select from hparams.SKEW_TYPES
     dropout regularization rate: from hparams.DROPOUT_RATE
     ALL of the above hparams can be fixed using flags defined in this function.
     Caution: The flags provide a way to override most but NOT all the other hyperparams than those described above in
@@ -54,8 +53,6 @@ def define_flags():
     flags.DEFINE_string('arch', None, 'dash-separated fully connected architecture: units-units-units....-units')
     flags.DEFINE_string('objective', None, 'objective to optimize', required=True)
     flags.DEFINE_enum('dataset', None, hparams.DATASETS, 'dataset to use', required=True)
-    flags.DEFINE_float('imbalance_factor', hparams.IMBALANCE_FACTOR, 'imbalance the dataset with this factor')
-    flags.DEFINE_enum('skew_type', None, hparams.SKEW_TYPES + ['all'], 'skew long tailed or step or no skew')
     flags.DEFINE_enum('scaler', 'standard', hparams.DATA_SCALER + ['identity'], 'data scaler to use')
     flags.DEFINE_enum('algorithm', None, hparams.ALGORITHM, 'training algorithm to use')
     flags.DEFINE_enum('bw_init', None, hparams.BW_INIT, 'feedback matrix init type')
@@ -173,13 +170,6 @@ def main(_):
 
     # fix hparams if specified
     hp = keras_tuner.HyperParameters()
-
-    if FLAGS.skew_type:
-        if FLAGS.skew_type == 'all':
-            config.skew_type = hp.Choice('skew_type', hparams.SKEW_TYPES)
-        else:
-            config.skew_type = hp.Fixed('skew_type', FLAGS.skew_type)
-        config.imbalance_factor = hp.Fixed('imbalance_factor', FLAGS.imbalance_factor)
 
     if FLAGS.algorithm:
         if config.problem_type != 'classification' and FLAGS.algorithm == 'drtp':

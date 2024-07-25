@@ -237,10 +237,10 @@ fixed value by means of an optional command line flag.
 ./train.bash data/ll_test_recons --dataset cifar10 
 --num_epochs 
 150 \
---activation swish --bw_init lecun --skew_type all\
+--activation swish --bw_init lecun \
 --algorithm mse --problem_type reconstruction \
---examples_frac 0. --executions_per_trial 3 \
---batch_norm --objective val_loss --arch 500-500-1000
+--examples_frac 0.5 --executions_per_trial 10 \
+--batch_norm --objective val_error --arch 500-1500-1000
 ```
 
 ## Caveats

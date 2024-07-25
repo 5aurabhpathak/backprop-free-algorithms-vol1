@@ -35,7 +35,6 @@ class HyperModel(keras_tuner.HyperModel):
     batchnorm: [True, False]
     feedback_matrix init scheme: hparams.BW_INIT
     learning rate: min_value=1e-4, max_value=.1, step=10, sampling='log'
-    skew type: only when hp exists. from hparams.SKEW_TYPES
     dropout regularization rate: from hparams.DROPOUT_RATE
     Any of these hparams can be prefixed as well. In that case, they are not varied.
     """
@@ -50,43 +49,6 @@ class HyperModel(keras_tuner.HyperModel):
         super().__init__(*args, **kwargs)
         self.config = config
 
-        # if validation error is the tuning objective, then best learning rate should be known. If not, it must be set
-        # Assumption: the best learning rate on training loss is known before tuning on the val loss or error
-        # the above assumption can be violated by explicitly providing a fixed learning rate when tuning with val metric
-        if ('val' in config.objective or 'error' in config.objective) and self.config.dataset in hparams.DATASETS:
-            try:
-                self.lr_df = pd.read_json(f'best_lr.json')
-            except (ValueError, FileNotFoundError):
-                print('could not read learning rate file. If it is not set otherwise, this script will crash')
-
-        # similarly for dropout rate, the best regularization rate must be known with respect to a smaller dataset
-        # before running more than 10 trials for the whole dataset
-        if (self.config.executions_per_trial >= 10 and 'val' in self.config.objective and
-                self.config.get('reg_rate') is None):
-            self.reg_df = pd.read_json('best_reg_rate.json')
-
-    def get_lr(self, hp):
-        """
-        get the learning rate
-        :param hp: keras tuner hyperparameters instance
-        :return: learning rate
-        """
-        if 'lr' not in hp:
-            try:
-                lr_df = self.lr_df[(self.lr_df.arch == self.config.arch) &
-                                      (self.lr_df.dataset == self.config.dataset) &
-                                      (self.lr_df.algo == self.config.algorithm) &
-                                      (self.lr_df.F == self.config.bw_init) &
-                                      (self.lr_df.act == self.config.activation)]
-                if self.config.get('skew_type'):
-                    lr_df = lr_df[lr_df.skew_type == self.config.skew_type]
-                lr = float(lr_df.lr)
-            except AttributeError:
-                raise ValueError('either lr has to be set or lr_df must be present in the working directory')
-        else:
-            lr = hp.get('lr')
-        return lr
-
     def build(self, hp):
         """
         build the model using hp
@@ -100,44 +62,16 @@ class HyperModel(keras_tuner.HyperModel):
         self.config.bw_init = hp.Choice('F', hparams.BW_INIT)
 
         if 'val' in self.config.objective:
-            if 'reg_rate' in hp:
-                self.config.reg_rate = hp.get('reg_rate')
-            else:
-                if self.config.executions_per_trial < 10:
-                    self.config.reg_rate = hp.Choice('reg_rate', hparams.DROPOUT_RATE)
-                else:
-                    reg_df = self.reg_df[(self.reg_df.arch == self.config.arch) &
-                                           (self.reg_df.dataset == self.config.dataset) &
-                                           (self.reg_df.algo == self.config.algorithm) &
-                                           (self.reg_df.F == self.config.bw_init) &
-                                           (self.reg_df.act == self.config.activation)]
-                    if self.config.get('skew_type'):
-                        reg_df = reg_df[reg_df.skew_type == self.config.skew_type]
-                    reg_rate = float(reg_df.reg_rate)
-                    self.config.reg_rate = reg_rate
-
-            lr = self.get_lr(hp)
+            self.config.reg_rate = hp.Choice('reg_rate', hparams.DROPOUT_RATE)
         else:
             # self.config.use_bias = hp.Boolean('use_bias')
             self.config.reg_rate = False
-
-            if 'error' in self.config.objective:
-                lr = self.get_lr(hp)
-            else:
-                lr = hp.Float('lr', min_value=1e-4, max_value=.1, step=10, sampling='log')
+            lr = hp.Float('lr', min_value=1e-4, max_value=.1, step=10, sampling='log')
 
         model = train.Model(self.config, name='model')
         if self.config.problem_type == 'classification':
             loss = 'categorical_crossentropy'
-
-            # if we are dealing with imbalanced classification
-            if self.config.get('skew_type') or self.config.dataset in {'caltech256', 'eurosat'}:
-                metrics = [tf.keras.metrics.F1Score(self.config.n_classes, average='micro'),
-                           tf.keras.metrics.Precision(),
-                           tf.keras.metrics.Recall(),
-                           util.error_rate]
-            else:
-                metrics = util.error_rate
+            metrics = util.error_rate
         elif self.config.problem_type == 'reconstruction':
             loss = 'mean_squared_error'
             metrics = None

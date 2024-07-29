@@ -150,7 +150,9 @@ def main(_):
     """main function. reads in flags to config dict, and calls subroutines"""
     for gpu in tf.config.list_physical_devices('GPU'):
         tf.config.experimental.set_memory_growth(gpu, True)
-    tf.config.optimizer.set_jit(True)
+
+    if FLAGS.use_xla:
+        tf.config.optimizer.set_jit(True)
 
     config = Config()
     config.problem_type = FLAGS.problem_type

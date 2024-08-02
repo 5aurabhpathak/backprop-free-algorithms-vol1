@@ -201,7 +201,6 @@ hyperparameters:
 - feedback_matrix init scheme: `hparams.BW_INIT`
 - learning rate: `min_value=1e-4, max_value=.1, step=10, 
   sampling='log'`
-- skew type: from `hparams.SKEW_TYPES`
 - dropout regularization rate: from `hparams.DROPOUT_RATE`
 
 We exclude those hparams from tuning that are set to a

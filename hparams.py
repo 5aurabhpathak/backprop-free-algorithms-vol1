@@ -21,8 +21,6 @@ from easydict import EasyDict as Augmentations
 ALGORITHM = ['bp', 'dfa', 'drtp', 'cce', 'mse']
 DATASETS = ['mnist', 'fmnist', 'cifar10', 'cifar100', 'caltech256', 'eurosat']
 ARCHS = ['500', '500-500-500-500-500', '500-1000-500', '1000', '1000-1000', '1000-500-1000']
-SKEW_TYPES = ['long_tailed', 'step']
-IMBALANCE_FACTOR = 10
 BATCHSIZE = 64
 NUM_EPOCHS = 300
 EXECUTIONS_PER_TRIAL = 3

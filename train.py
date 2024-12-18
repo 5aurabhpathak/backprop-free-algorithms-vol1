@@ -46,7 +46,6 @@ class Layer(tf.keras.layers.Layer):
         super().__init__(**kwargs)
         self.backend = layer
         self.config = config
-        self.inputs = None
         self.project = projection.DenseProject(layer.units, config)
 
         # trackers
@@ -90,7 +89,6 @@ class Layer(tf.keras.layers.Layer):
         :param training: training flag
         :return: output tensor
         """
-        self.inputs = x
         return self.backend(x, training=training)
 
 

@@ -48,12 +48,12 @@ def get_model(config):
             model.add(tf.keras.layers.Dropout(rate=config.reg_rate, seed=hparams.RANDOM_SEED))
 
     if config.problem_type == 'classification':
-        model.add(tf.keras.layers.Dense(config.n_classes, name='DenseOut',
+        model.add(tf.keras.layers.Dense(config.output_shape[1], name='DenseOut',
                                         kernel_initializer=tf.keras.initializers.Orthogonal(gain=1.,
                                                                                             seed=hparams.RANDOM_SEED)))
         model.add(tf.keras.layers.Activation('softmax'))
     elif config.problem_type == 'reconstruction':
-        model.add(tf.keras.layers.Dense(config.n_classes, name='DenseOut',
+        model.add(tf.keras.layers.Dense(config.output_shape[1], name='DenseOut',
                                         kernel_initializer=tf.keras.initializers.Orthogonal(gain=1.,
                                                                                             seed=hparams.RANDOM_SEED)))
         model.add(tf.keras.layers.Activation('tanh' if config.scale_data == 'standard' else 'sigmoid'))

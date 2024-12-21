@@ -48,7 +48,7 @@ class DenseProject(tf.keras.layers.Layer):
         bw_init = util.get_bw_fn(self.config.bw_init)(seed=hparams.RANDOM_SEED, gain=1.)
 
         if self.config.problem_type == "classification":
-            shape = (self.units, self.config.n_classes)
+            shape = (self.units, self.config.output_shape[1])
         elif self.config.problem_type == "reconstruction":
             shape = (self.units, input_shape[1])
         else:

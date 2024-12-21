@@ -203,7 +203,7 @@ def main(_):
 
     hc = hypermodels.HyperModel
 
-    config.n_classes = dataloader.get_n_classes(config)
+    config.input_shape, config.output_shape = dataloader.get_shapes(config)
     tuner = run_tuner(config, hc, hp=hp)
     tuner.results_summary()
     tuner.save()

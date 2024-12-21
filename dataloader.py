@@ -177,7 +177,7 @@ def scaler(x, y, config):
     return x, y
 
 
-def get_n_classes(config):
+def get_shapes(config):
     """
     gets the number of classes for classification task, input dimensions for regression task
     :param config: config dict
@@ -185,10 +185,11 @@ def get_n_classes(config):
     """
     #TODO: need to define a simpler logic. Currently this requires reading the whole dataset
     x, y = get_data(config)
+    x = x[0].ravel()
     if config.problem_type == 'classification':
-        return y.shape[1]
+        return (config.batchsize, x.shape[0]), (config.batchsize, y.shape[1])
     elif config.problem_type == 'reconstruction':
-        return x[0].ravel().shape[0]
+        return (config.batchsize, x.shape[0]), (config.batchsize, x.shape[0])
 
 
 def augmentations(config):

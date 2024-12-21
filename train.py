@@ -80,7 +80,7 @@ class Layer(tf.keras.layers.Layer):
         """
         super().build(input_shape)
         self.backend.build(input_shape)
-        self.project.build(input_shape=(None, self.config.n_classes))
+        self.project.build(input_shape=self.config.output_shape)
 
     def call(self, x, training=False):
         """
@@ -307,7 +307,7 @@ class Model(tf.keras.Model):
                         if hasattr(self, 'tboard') and not self.config.batchnorm:
                             with self.tboard._train_writer.as_default():
                                 tf.summary.histogram(f'{lyr.name}/activation', lyr_output,
-                                                     step=self._train_counter)
+                                                     step=self._traisounter)
                         i += 1
 
                 elif isinstance(lyr, tf.keras.layers.BatchNormalization):

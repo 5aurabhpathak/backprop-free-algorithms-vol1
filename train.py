@@ -375,7 +375,7 @@ class Model(tf.keras.Model):
                 elif isinstance(lyr, tf.keras.layers.BatchNormalization) and hasattr(self, 'tboard'):
                     lyr_output = bn_outs.get()
                     with self.tboard._val_writer.as_default():
-                        tf.summary.histogram(f'{lyr.name}/activation', lyr_output, step=self._train_counter)
+                        tf.summary.histogram(f'{lyr.name}/activation', lyr_output, step=self._test_counter)
 
         # update loss and compiled metrics
         self.compiled_loss(y, yp)

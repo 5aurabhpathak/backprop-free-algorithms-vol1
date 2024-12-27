@@ -179,9 +179,9 @@ def scaler(x, y, config):
 
 def get_shapes(config):
     """
-    gets the number of classes for classification task, input dimensions for regression task
+    gets the shapes of input and outputs
     :param config: config dict
-    :return: number of classes or number of input dimensions depending upon the task type
+    :return: shapes as a two-tuple
     """
     #TODO: need to define a simpler logic. Currently this requires reading the whole dataset
     x, y = get_data(config)

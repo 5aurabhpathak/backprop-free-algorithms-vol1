@@ -17,13 +17,12 @@ OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 Purpose: Hypermodels for keras tuner hyperparameter tuning
 """
 import keras_tuner
-import pandas as pd
 import tensorflow as tf
 
 import dataloader
 import hparams
-import util
 import train
+import util
 
 
 class HyperModel(keras_tuner.HyperModel):

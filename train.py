@@ -168,7 +168,7 @@ class Model(tf.keras.Model):
         x = inputs
         for lyr in self.lyrs:
             x = lyr(x, training=training)
-            if hasattr(lyr, 'backend') and isinstance(lyr.backend, tf.keras.layers.Dense):
+            if hasattr(lyr, 'backend'):
                 logging.info(f'Featuremap: {x.shape}')
             elif isinstance(lyr, tf.keras.layers.Activation) and post_activation_outs is not None:
                 post_activation_outs.put(x)

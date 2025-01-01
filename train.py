@@ -113,7 +113,7 @@ class Model(tf.keras.Model):
             self.lyrs = []
             self.weighted_layers = []
             for lyr in self.model.layers[:-2]:
-                if isinstance(lyr, (tf.keras.layers.Dense, tf.keras.layers.Conv2D)):
+                if isinstance(lyr, tf.keras.layers.Dense):
                     lyr = Layer(lyr, config)
                     self.weighted_layers.append(lyr)
                 self.lyrs.append(lyr)
@@ -168,7 +168,7 @@ class Model(tf.keras.Model):
         x = inputs
         for lyr in self.lyrs:
             x = lyr(x, training=training)
-            if hasattr(lyr, 'backend') and isinstance(lyr.backend, (tf.keras.layers.Dense, tf.keras.layers.Conv2D)):
+            if hasattr(lyr, 'backend') and isinstance(lyr.backend, tf.keras.layers.Dense):
                 logging.info(f'Featuremap: {x.shape}')
             elif isinstance(lyr, tf.keras.layers.Activation) and post_activation_outs is not None:
                 post_activation_outs.put(x)

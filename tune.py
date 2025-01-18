@@ -137,8 +137,6 @@ def create_project_name(config, hp):
         project_dir = '_'.join([project_dir, config.algorithm])
     if 'F' in hp and is_fixed('F'):
         project_dir = '_'.join([project_dir, config.bw_init])
-    if 'skew_type' in hp and is_fixed('skew_type'):
-        project_dir = '_'.join([project_dir, config.skew_type])
     if 'lr' in hp and is_fixed('lr'):
         project_dir = '_'.join([project_dir, str(hp.get("lr")).replace('.','')])
     if 'arch' in hp and is_fixed('arch'):
